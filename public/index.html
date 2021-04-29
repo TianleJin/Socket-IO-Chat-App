@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Entry</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html, body {
+        height: 100%;
+      }
+
+      body {
+        position: relative;
+        margin: 0;
+        overflow: hidden;
+        background: #202020;
+      }
+
+      form {
+        position: absolute;
+        top: 45%;
+        left: 30%;
+        width: 40%;
+        height: 10%;
+        text-align: center;
+      }
+
+      form input {
+        height: 100%;
+        font-size: 18px;
+      }
+
+      form button {
+        height: 100%;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="form">
+      <input id="input" autocomplete="off" placeholder="Your nickname..."><button>Enter Chat</button>
+    </form>
+    <script>
+      var form = document.getElementById("form");
+      var input = document.getElementById("input");
+      form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        if (input.value) {
+          localStorage.setItem("nickname", input.value);
+          window.location.replace("/chat");
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -25,21 +25,39 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        var myNickname = localStorage['nickname'];
+        var nickname = localStorage['nickname'];
+        var socket = io();
+        var typing = false;
+        var timeout = null;
+
         var form = document.getElementById('form');
         var messages = document.getElementById('messages');
         var input = $('#input');
         var feedback = $('#feedback');
 
-        var socket = io();
+        function sendMessage() {
+          if (input.val()) {
+              socket.emit('chat message', input.val());
+              input.val('');
+          }
+        };
+
+        function typingTimeout(){
+          typing = false;
+          socket.emit('typing', { nickname: nickname, typing: typing });
+        };
 
         socket.on('connect', () => {
-          socket.emit('nickname', localStorage['nickname']);
+          socket.emit('nickname', nickname);
         });
 
         socket.on('typing', (data) => {
-          feedback.html(`<p><i>${data.nickname} is typing... </i></p>`);
-          setTimeout(function() { feedback.html(''); }, 1000);
+          if (data.typing) {
+            feedback.html(`<p><i>${data.nickname} is typing... </i></p>`);
+          }
+          else {
+            feedback.html('');
+          }
         });
 
         socket.on('chat message', (msg) => {
@@ -51,14 +69,21 @@
 
         form.addEventListener('submit', function(e) {
           e.preventDefault();
-          if (input.val()) {
-              socket.emit('chat message', input.val());
-              input.val('');
-          }
+          sendMessage();
         });
 
         input.keypress((e) => {
-          socket.emit('typing');
+          if (e.which != 13) {
+            typing = true;
+            socket.emit('typing', { nickname: nickname, typing: typing });
+            clearTimeout(timeout);
+            timeout = setTimeout(typingTimeout, 3000);
+          }
+          else {
+            clearTimeout(timeout);
+            typingTimeout();
+            sendMessage();
+          }
         });
     </script>
   </body>

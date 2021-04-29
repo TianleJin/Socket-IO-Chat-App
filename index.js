@@ -20,11 +20,11 @@ io.on('connection', (socket) => {
 
     socket.on('nickname', (nickname) => {
         socket.nickname = nickname;
-        io.emit('chat message', `${socket.nickname} has joined the chat`);
+        io.emit('chat message', `${socket.nickname} has joined the chat.`);
     });
 
     socket.on('typing', (data) => {
-        socket.broadcast.emit('typing', { nickname : socket.nickname });
+        socket.broadcast.emit('typing', data);
     })
 
     socket.on('chat message', (msg) => {
@@ -32,7 +32,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('disconnect', () => {
-        io.emit('chat message', `${socket.nickname} has left the chat`);
+        io.emit('chat message', `${socket.nickname} has left the chat.`);
     });
 });
 
